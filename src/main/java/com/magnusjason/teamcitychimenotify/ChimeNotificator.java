@@ -130,23 +130,25 @@ public class ChimeNotificator extends NotificatorAdapter {
             "/md ### " + statusType.statusEmoji + " " + build.getFullName() + " #" + buildNumber + ": " + statusText + "\n  " +
                 "[View build](" + buildLogUrl + ")\n  ";
 
-        List<? extends VcsModification> changes = build.getContainingChanges();
-        if ((statusType == StatusType.INFO || verbose) && !changes.isEmpty()) {
+        if ((statusType == StatusType.INFO || verbose)) {
             if (build instanceof SBuild) {
                 TriggeredBy triggeredBy = ((SBuild) build).getTriggeredBy();
                 message += "Triggered by: " + triggeredBy.getAsString() + "\n  ";
             }
 
-            String changeTableRows = changes.stream()
-                .limit(5) // Lets not go too crazy
-                .map(change -> {
-                    String descriptionFirstLine = change.getDescription().split("\n")[0];
-                    return "| " + change.getUserName() + " | " + descriptionFirstLine + " |\n  ";
-                }).collect(Collectors.joining());
-            message +=
-                "| Author | Description |\n" +
-                    "|-|-|\n" +
-                    changeTableRows;
+            List<? extends VcsModification> changes = build.getContainingChanges();
+            if (!changes.isEmpty()) {
+                String changeTableRows = changes.stream()
+                    .limit(5) // Lets not go too crazy
+                    .map(change -> {
+                        String descriptionFirstLine = change.getDescription().split("\n")[0];
+                        return "| " + change.getUserName() + " | " + descriptionFirstLine + " |\n  ";
+                    }).collect(Collectors.joining());
+                message +=
+                    "| Author | Description |\n" +
+                        "|-|-|\n" +
+                        changeTableRows;
+            }
         }
 
         return message;
