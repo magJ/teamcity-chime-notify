@@ -134,7 +134,7 @@ public class ChimeNotificator extends NotificatorAdapter {
         if ((statusType == StatusType.INFO || verbose) && !changes.isEmpty()) {
             if (build instanceof SBuild) {
                 TriggeredBy triggeredBy = ((SBuild) build).getTriggeredBy();
-                message += "Triggered by: " + triggeredBy + "\n";
+                message += "Triggered by: " + triggeredBy.getAsString() + "\n  ";
             }
 
             String changeTableRows = changes.stream()
