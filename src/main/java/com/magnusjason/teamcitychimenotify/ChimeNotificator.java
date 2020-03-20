@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -126,14 +127,20 @@ public class ChimeNotificator extends NotificatorAdapter {
         String buildTypeId = build.getBuildTypeExternalId();
         String buildLogUrl = sBuildServer.getRootUrl() + "/viewLog.html?buildNumber=" + buildNumber + "&buildTypeId=" + buildTypeId;
 
-        String message =
+        final StringBuilder message = new StringBuilder(
             "/md ### " + statusType.statusEmoji + " " + build.getFullName() + " #" + buildNumber + ": " + statusText + "\n  " +
-                "[View build](" + buildLogUrl + ")\n  ";
+                "[View build](" + buildLogUrl + ")\n  ");
+
 
         if ((statusType == StatusType.INFO || verbose)) {
             if (build instanceof SBuild) {
+                Map<String, String> params = ((SBuild) build).getBuildOwnParameters();
+                if (!params.isEmpty()) {
+                    message.append("| Param | Value |\n|:- |:- |\n");
+                    params.forEach((key, val) -> message.append("| ").append(key).append(" | ").append(val));
+                }
                 TriggeredBy triggeredBy = ((SBuild) build).getTriggeredBy();
-                message += "Triggered by: " + triggeredBy.getAsString() + "\n  ";
+                message.append("Triggered by: ").append(triggeredBy.getAsString()).append("\n  ");
             }
 
             List<? extends VcsModification> changes = build.getContainingChanges();
@@ -144,14 +151,11 @@ public class ChimeNotificator extends NotificatorAdapter {
                         String descriptionFirstLine = change.getDescription().split("\n")[0];
                         return "| " + change.getUserName() + " | " + descriptionFirstLine + " |\n  ";
                     }).collect(Collectors.joining());
-                message +=
-                    "| Author | Description |\n" +
-                        "|:- |:- |\n" +
-                        changeTableRows;
+                message.append("| Author | Description |\n|:- |:- |\n").append(changeTableRows);
             }
         }
 
-        return message;
+        return message.toString();
     }
 
 }
