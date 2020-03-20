@@ -3,8 +3,10 @@ package com.magnusjason.teamcitychimenotify;
 import jetbrains.buildServer.Build;
 import jetbrains.buildServer.notification.NotificatorAdapter;
 import jetbrains.buildServer.notification.NotificatorRegistry;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SRunningBuild;
+import jetbrains.buildServer.serverSide.TriggeredBy;
 import jetbrains.buildServer.serverSide.UserPropertyInfo;
 import jetbrains.buildServer.users.NotificatorPropertyKey;
 import jetbrains.buildServer.users.PropertyKey;
@@ -130,6 +132,11 @@ public class ChimeNotificator extends NotificatorAdapter {
 
         List<? extends VcsModification> changes = build.getContainingChanges();
         if ((statusType == StatusType.INFO || verbose) && !changes.isEmpty()) {
+            if (build instanceof SBuild) {
+                TriggeredBy triggeredBy = ((SBuild) build).getTriggeredBy();
+                message += "Triggered by: " + triggeredBy + "\n";
+            }
+
             String changeTableRows = changes.stream()
                 .limit(5) // Lets not go too crazy
                 .map(change -> {
