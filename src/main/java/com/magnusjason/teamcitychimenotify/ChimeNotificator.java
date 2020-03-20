@@ -146,7 +146,7 @@ public class ChimeNotificator extends NotificatorAdapter {
                     }).collect(Collectors.joining());
                 message +=
                     "| Author | Description |\n" +
-                        "|-|-|\n" +
+                        "|:- |:- |\n" +
                         changeTableRows;
             }
         }
