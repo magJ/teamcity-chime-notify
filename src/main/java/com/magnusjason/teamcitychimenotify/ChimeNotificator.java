@@ -151,7 +151,7 @@ public class ChimeNotificator extends NotificatorAdapter {
                         String descriptionFirstLine = change.getDescription().split("\n")[0];
                         return "| " + change.getUserName() + " | " + descriptionFirstLine + " |  \n";
                     }).collect(Collectors.joining());
-                message.append("| Author | Description |\n|:- |:- |\n").append(changeTableRows);
+                message.append("\n| Author | Description |\n|:- |:- |\n").append(changeTableRows);
             }
         }
 
